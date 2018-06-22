@@ -18,3 +18,7 @@ cp etcd.service /lib/systemd/system/etcd.service
 
 systemctl daemon-reload
 systemctl enable etcd.service
+
+#etcdctl set /coreos.com/network/config '{"Network": "100.100.0.0/16","SubnetLen": 24,"Backend": {"Type": "vxlan","VNI": 1}}'
+#etcdctl get /coreos.com/network/config
+#etcdctl rm  /coreos.com --recursive

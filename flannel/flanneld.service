@@ -1,0 +1,22 @@
+[Unit]
+Description=Flanneld overlay address etcd agent
+Documentation=https://github.com/coreos/flannel
+After=network.target
+After=network-online.target
+Wants=network-online.target
+After=etcd.service
+Before=docker.service
+
+[Service]
+Type=notify
+EnvironmentFile=-/var/lib/k8s/flannel/flanneld.conf
+ExecStart=/usr/bin/flanneld -subnet-file=/var/lib/k8s/flannel/subnet.env -etcd-endpoints=${FLANNEL_ETCD_ENDPOINTS} -etcd-prefix=${FLANNEL_ETCD_PREFIX} -iface=${FLANNEL_IFACE} $FLANNEL_OPTIONS
+ExecStartPost=/var/lib/k8s/flannel/mk-docker-opts.sh -f /var/lib/k8s/flannel/subnet.env -k DOCKER_NETWORK_OPTIONS -d /var/lib/k8s/flannel/docker
+ExecStartPost=/sbin/iptables -P FORWARD ACCEPT
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
+RequiredBy=docker.service
+
