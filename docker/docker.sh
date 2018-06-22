@@ -25,8 +25,12 @@ docker run --rm hello-world
 systemctl stop docker
 ip link delete docker0
 
-sed 's/^ExecStart=.*/ExecStart=\/usr\/bin\/dockerd -H fd:\/\/ $DOCKER_NETWORK_OPTIONS \r\nExecStartPost=\/sbin\/iptables -P FORWARD ACCEPT/g' /lib/systemd/system/docker.service
+sed \
+    's/^ExecStart=.*/ExecStart=\/usr\/bin\/dockerd -H fd:\/\/ $DOCKER_NETWORK_OPTIONS \r\nExecStartPost=\/sbin\/iptables -P FORWARD ACCEPT/g' \
+    /lib/systemd/system/docker.service > docker.service
+
+rm /lib/systemd/system/docker.service
+mv docker.service /lib/systemd/system/docker.service
 
 systemctl daemon-reload
-gpasswd -a docker
 
